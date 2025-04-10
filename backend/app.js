@@ -8,39 +8,51 @@ const cors = require('cors');
 const errorMiddleware = require("./middleware/error");
 const dotenv = require('dotenv');
 dotenv.config();
+
 // Config
 if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({ path: "backend/config/config.env" });
+  require("dotenv").config({ path: "./config/config.env" });
 }
+//onsole.log("MONGO_URI:", process.env.DB_URI);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
 
-//CORS
+// CORS
 app.use(cors({
-  origin:`${process.env.FRONTEND}`,
-  credentials:true
-}))
+  origin: `${process.env.FRONTEND}`,
+  credentials: true
+}));
+
+app.use(express.static(path.join(__dirname, "../frontend/build")));
+
 // Route Imports
 const product = require("./routes/productRoute");
 const user = require("./routes/userRoute");
 const order = require("./routes/orderRoute");
-const payment = require("./routes/paymentRoute");
 
 app.use("/api/v1", product);
 app.use("/api/v1", user);
 app.use("/api/v1", order);
-app.use("/api/v1", payment);
 
-app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
-});
+
+
+console.log("Registered routes:");
+console.log("Registered routes:");
+// app._router?.stack?.forEach((middleware) => {
+//   if (middleware.route) {
+//     console.log(`${middleware.route.stack[0].method.toUpperCase()} ${middleware.route.path}`);
+//   }
+// });
+
 
 // Middleware for Errors
-app.use(errorMiddleware);
+// app.use(errorMiddleware);
+// app.get("/*", (req, res) => {
+//   res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
+// });
 
 module.exports = app;
